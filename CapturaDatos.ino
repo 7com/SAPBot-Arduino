@@ -1,5 +1,8 @@
 #include "motor.h"
 
+//Bandera y evento serial que espera un \n para enviar los datos de los sensores
+//conectados al Scorbot
+
 boolean enviar = false;
 
 void serialEvent() {
@@ -17,12 +20,14 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //Se crean un arreglo de 6 Motor y se capturan los datos.
   Motor m[6];
   for (int i = 0; i < 6; i++)
   {
     m[i] = capturar(0 + i, 8 + i);
   }
+
+  //Si se activo la bandera del evento serial, se inicia el envio de datos por serial
   if (enviar)
   {
     String volt="";
@@ -50,6 +55,8 @@ void loop() {
   }
 }
 
+//Función dedicada a capturar los datos del PWM y Temperatura de los sensores correspondientes
+//pinE (Sensor de Voltaje), pinT (Sensor de Temperatura).
 Motor capturar(int pinE, int pinT)
 {
   unsigned long high, low, cycle;
