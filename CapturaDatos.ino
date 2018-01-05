@@ -49,7 +49,7 @@ void loop() {
         temp = temp + m[i].temp + ",";
       }
     }
-    String s = volt + freq + temp + ",,\r";
+    String s = volt + freq + temp + "*\r";
     Serial.print(s);
     enviar = false;
   }
