@@ -1,5 +1,7 @@
 #include "motor.h"
 
+Motor m[7]; //Se crean un arreglo de 7 Motor;
+
 //Bandera y evento serial que espera un \n para enviar los datos de los sensores
 //conectados al Scorbot
 
@@ -23,14 +25,16 @@ void serialEvent() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  for (int i = 0; i < 7; i++)
+  {
+    m[i] = {0, 0, 0, 0, 0};
+  }
 }
 
 void loop() {
-  //Se crean un arreglo de 7 Motor y se capturan los datos.
-  Motor m[7];
   for (int i = 0; i < 7; i++)
   {
-    m[i] = capturar(0 + i, 8 + i);
+    m[i] = capturar(0 + i, 8 + i, m[i].aB, m[i].aM);
   }
 
   //Si se activo la bandera del evento serial, se inicia el envio de datos por serial
@@ -88,7 +92,7 @@ void loop() {
 
 //Función dedicada a capturar los datos del PWM y Temperatura de los sensores correspondientes
 //pinE (Sensor de Voltaje), pinT (Sensor de Temperatura).
-Motor capturar(int pinE, int pinT)
+Motor capturar(int pinT, int pinE, float aB, float aM)
 {
   unsigned long high, low, cycle;
   float dutyCycle1, dutyCycle2, voltage, temp, hz, volt;
@@ -133,10 +137,33 @@ Motor capturar(int pinE, int pinT)
       }
     }
   }
-
   temp = (voltage - 0.5) * 100.0;
+  if ((aB==0) && (aM==0))
+  {
+    aB = temp;
+    Motor m = {volt, hz, temp, aB, aM};
+    return m;
+  }
+  if (((abs(temp-aB))<2.0))
+  { 
+    Motor m = {volt, hz, temp, temp, aM};
+    return m;
+  }
+  else
+  {
+    if (((abs(temp-aM))<2.0))
+    {
+      Motor m = {volt, hz, temp, temp, aM};
+      return m;
+    }
+    else
+    {
+      Motor m = {volt, hz, aB, aB, temp};
+      return m;
+    }
+  }
 
-  Motor m = {volt, hz, temp};
+  Motor m = {volt, hz, temp, aB, aM};
   return m;
 }
 
