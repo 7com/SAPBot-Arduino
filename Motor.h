@@ -4,6 +4,8 @@ struct Motor
   float volt;
   float freq;
   float temp;
+  float voltA;
+  float freqA;
   float aB;
   float aM;
 } ;
