@@ -7,7 +7,7 @@ Motor m[7]; //Se crean un arreglo de 7 Motor;
 
 boolean enviar = false;
 boolean slidebase = false;
-int to = 150;
+
 void serialEvent() {
   while (Serial.available()) {
     char inChar = (char)Serial.read();
@@ -40,7 +40,6 @@ void loop() {
   //Si se activo la bandera del evento serial, se inicia el envio de datos por serial
   if (enviar && !slidebase)
   {
-    enviar = false;
     String temp = "";
     //temp()
     for (int i = 0; i < 6; i++)
@@ -55,7 +54,8 @@ void loop() {
       }
     }
     String s = temp + "#\r";
-    Serial.println(s);
+    Serial.print(s);
+    enviar = false;
   }
   if (enviar && slidebase)
   {
@@ -82,7 +82,7 @@ void loop() {
 Motor capturar(int pinT, float aB, float aM)
 {
   float temp, voltaje;
-  
+  voltaje = (analogRead(pinT) * 0.004882814);
   temp = (voltaje - 0.5) * 100.0;
   if ((aB == 0) && (aM == 0))
   {
