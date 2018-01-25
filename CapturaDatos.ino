@@ -1,4 +1,5 @@
-#include "motor.h"
+#include "Motor.h"
+#include "Filter.h"
 
 Motor m[7]; //Se crean un arreglo de 7 Motor;
 
@@ -7,6 +8,14 @@ Motor m[7]; //Se crean un arreglo de 7 Motor;
 
 boolean enviar = false;
 boolean slidebase = false;
+
+ExponentialFilter<float> ADCFilter1(20, 0);
+ExponentialFilter<float> ADCFilter2(20, 0);
+ExponentialFilter<float> ADCFilter3(20, 0);
+ExponentialFilter<float> ADCFilter4(20, 0);
+ExponentialFilter<float> ADCFilter5(20, 0);
+ExponentialFilter<float> ADCFilter6(20, 0);
+ExponentialFilter<float> ADCFilter7(20, 0);
 
 void serialEvent() {
   while (Serial.available()) {
@@ -25,9 +34,26 @@ void serialEvent() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  float temp, voltaje;
   for (int i = 0; i < 7; i++)
   {
     m[i] = {0, 0, 0};
+    voltaje = (analogRead(i) * 0.004882814);
+    temp = (voltaje - 0.5) * 100.0;
+    if (i==0)
+      ADCFilter1.SetCurrent(temp);
+    if (i==1)
+      ADCFilter2.SetCurrent(temp);
+    if (i==2)
+      ADCFilter3.SetCurrent(temp);
+    if (i==3)
+      ADCFilter4.SetCurrent(temp);
+    if (i==4)
+      ADCFilter5.SetCurrent(temp);
+    if (i==5)
+      ADCFilter6.SetCurrent(temp);
+    if (i==6)
+      ADCFilter7.SetCurrent(temp);
   }
 }
 
@@ -41,7 +67,6 @@ void loop() {
   if (enviar && !slidebase)
   {
     String temp = "";
-    //temp()
     for (int i = 0; i < 6; i++)
     {
       if (i == 5)
@@ -84,6 +109,42 @@ Motor capturar(int pinT, float aB, float aM)
   float temp, voltaje;
   voltaje = (analogRead(pinT) * 0.004882814);
   temp = (voltaje - 0.5) * 100.0;
+  if (pinT==0)
+  {
+    ADCFilter1.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==1)
+  {
+    ADCFilter2.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==2)
+  {
+    ADCFilter3.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==3)
+  {
+    ADCFilter4.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==4)
+  {
+    ADCFilter5.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==5)
+  {
+    ADCFilter6.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+  if (pinT==6)
+  {
+    ADCFilter7.Filter(temp);
+    temp=ADCFilter7.Current();
+  }
+    
   if ((aB == 0) && (aM == 0))
   {
     aB = temp;
@@ -92,6 +153,7 @@ Motor capturar(int pinT, float aB, float aM)
   }
   if (((abs(temp - aB)) < 2.0))
   {
+    aB = temp;
     Motor m = {temp, aB, aM};
     return m;
   }
@@ -99,18 +161,19 @@ Motor capturar(int pinT, float aB, float aM)
   {
     if (((abs(temp - aM)) < 2.0))
     {
+      aM=aB;
+      aB=temp;
       Motor m = {temp, aB, aM};
       return m;
     }
     else
     {
+      aM=temp;
+      temp=aB;
       Motor m = {temp, aB, aM};
       return m;
     }
   }
-
-  Motor m = {temp, aB, aM};
-  return m;
 }
 
 
