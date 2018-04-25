@@ -1,3 +1,16 @@
+/********************************************************************
+ *     SAPBot - Sistema de Adquisición de Parámetros Scorbot        *
+ *                    Código Arduino Mega 2560                      *
+ *                                                                  *
+ * Desarrollado por:                                                *
+ *                    - Hugo Ríos Fuentes                           *
+ *                    - Felipe Valenzuela Cornejo                   *
+ *                                                                  *
+ *             Universidad del Bío-Bío 2017-2                       *
+ *       Desarrollado a petición del Laboratorio CIMUBB             *
+ *  Memoria para optar al título de Ingeniero Civil en Informática  *
+ ********************************************************************/
+
 #include "Motor.h"
 
 Motor m[7]; //Se crean un arreglo de 7 Motor;
